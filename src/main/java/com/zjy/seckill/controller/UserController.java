@@ -1,24 +1,32 @@
 package com.zjy.seckill.controller;
 
 
+import com.alibaba.druid.util.StringUtils;
 import com.zjy.seckill.controller.viewobject.UserVO;
 import com.zjy.seckill.error.BusinessException;
 import com.zjy.seckill.error.EmBusinessError;
 import com.zjy.seckill.response.CommonReturnType;
 import com.zjy.seckill.service.UserService;
 import com.zjy.seckill.service.model.UserModel;
+import io.netty.handler.codec.base64.Base64Encoder;
+import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+import sun.misc.BASE64Encoder;
+import sun.security.provider.MD5;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.io.UnsupportedEncodingException;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.Random;
 
 @RestController("user")
 @RequestMapping("/user")
-@CrossOrigin
-public class UserController extends BaseController{
+@CrossOrigin(allowCredentials = "true", allowedHeaders = "*")
+public class UserController extends BaseController {
 
     @Resource
     private UserService userService;
@@ -26,6 +34,33 @@ public class UserController extends BaseController{
     //重点！理论上来说这样注入的，是单例模式，但是这个通过了ThreadLoacl的多线程处理，还拥有ThreadLocal清除机制，本质是proxy
     @Resource
     private HttpServletRequest httpServletRequest;
+
+    //用户注册接口
+    @PostMapping(value = "/register", consumes = {CONTENT_TYPE_FORMED})
+    public CommonReturnType register(@RequestParam("telPhone") String telPhone,
+                                     @RequestParam("otpCode")  String otpCode,
+                                     @RequestParam("name")     String name,
+                                     @RequestParam("gender")   Integer gender,
+                                     @RequestParam("age")      Integer age,
+                                     @RequestParam("password") String password) throws BusinessException, UnsupportedEncodingException, NoSuchAlgorithmException {
+        //验证手机号和对应的otpCode
+        String inSessionOtpCode = (String) httpServletRequest.getSession().getAttribute(telPhone);
+        //这里是阿里巴巴的StringUtils
+        if (!StringUtils.equals(otpCode, inSessionOtpCode)) {
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "短信验证码不符合");
+        }
+        //进入用户的注册流程
+        UserModel userModel = new UserModel();
+        userModel.setName(name);
+        userModel.setGender(new Byte(String.valueOf(gender.intValue())));
+        userModel.setAge(age);
+        userModel.setTelphone(telPhone);
+        userModel.setRegisterMode("byphone");
+        //对明文密码进行加密
+        userModel.setEncrptPassword(encodeByMd5(password));
+        userService.register(userModel);
+        return CommonReturnType.create(null);
+    }
 
     @RequestMapping(value = "/getOtp", method = {RequestMethod.POST}, consumes = {CONTENT_TYPE_FORMED})
     public CommonReturnType getOtp(@RequestParam("telPhone") String telPhone) {
@@ -57,6 +92,15 @@ public class UserController extends BaseController{
 
         //返回通用对象
         return CommonReturnType.create(userVO);
+    }
+
+    private String encodeByMd5(String password) throws UnsupportedEncodingException, NoSuchAlgorithmException {
+        //确定计算方法
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        BASE64Encoder base64Encoder = new BASE64Encoder();
+        //加密字符串
+        String newPassword = base64Encoder.encode(md5.digest((password.getBytes("utf-8"))));
+        return newPassword;
     }
 
     private UserVO convertFromModel(UserModel userModel) {

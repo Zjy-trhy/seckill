@@ -5,7 +5,7 @@
     <meta name="renderer" content="webkit">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>getOtp</title>
+    <title>用户注册</title>
 
     <!-- Bootstrap -->
     <link href="images/bootstrap.min.css" rel="stylesheet">
@@ -25,18 +25,29 @@
             </div>
         </div>
         <div class="container">
-            <div class="row">
+            <div class="content">
                 <div class="col-md-3 col-sm-8 col-centered">
-                    <form method="post" id="register-form" autocomplete="off" action="/"
-                          class="nice-validator n-default" novalidate>
                         <div class="form-group">
                             <input type="text" class="form-control" id="telphone" name="telphone" placeholder="手机号">
                         </div>
-                        <div class="form-actions">
-                            <button type="submit" id="getotp" class="btn btn-primary btn-current">获取短信验证码
-                            </button>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="otpCode" name="otpCode" placeholder="验证码">
                         </div>
-                    </form>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="密码">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="用户名">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="gender" name="gender" placeholder="性别">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="age" name="age" placeholder="年龄">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="register" class="btn btn-primary btn-current">提交注册</button>
+                        </div>
                 </div>
             </div>
         </div>
@@ -77,31 +88,60 @@
 <script>
     <!--    等页面成功渲染之后，才能执行-->
     jQuery(document).ready(function () {
-        $("#getotp").on("click", function () {
+        $("#register").on("click", function () {
             //绑定otp的click事件，用于向后端发送获取手机验证码的请求
             let telPhone = $("#telphone").val();
+            let otpCode = $("#otpCode").val();
+            let password = $("#password").val();
+            let name = $("#name").val();
+            let gender = $("#gender").val();
+            let age = $("#age").val();
             if (telPhone == null || telPhone == "") {
                 alert("手机号不能为空");
+                return false;
+            }
+            if (otpCode == null || otpCode == "") {
+                alert("验证码不能为空");
+                return false;
+            }
+            if (password == null || password == "") {
+                alert("密码不能为空");
+                return false;
+            }
+            if (name == null || name == "") {
+                alert("用户名不能为空");
+                return false;
+            }
+            if (gender == null || gender == "") {
+                alert("性别不能为空");
+                return false;
+            }
+            if (age == null || age == "") {
+                alert("年龄不能为空");
                 return false;
             }
             $.ajax({
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded",
-                url: "http://localhost:8080/user/getOtp",
+                url: "http://localhost:8080/user/register",
                 data: {
-                    "telPhone": $("#telphone").val()
+                    "telPhone": telPhone,
+                    "otpCode": otpCode,
+                    "password": password,
+                    "name": name,
+                    "gender": gender,
+                    "age": age
                 },
                 xhrFields: {withCredentials: true},
                 success: function (data) {
                     if (data.status == "success") {
-                        alert("otp已经发送到了您的手机上");
-                        window.location.href = "register.html";
+                        alert("注册成功");
                     } else {
-                        alert("发送失败，原因为：" + data.data.errMsg);
+                        alert("注册失败，原因为：" + data.data.errMsg);
                     }
                 },
                 error: function (data) {
-                    alert("otp发送失败, 原因为" + data.responseText);
+                    alert("注册失败, 原因为" + data.responseText);
                 }
             });
             return false;
