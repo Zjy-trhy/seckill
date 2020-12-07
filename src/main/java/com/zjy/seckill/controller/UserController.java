@@ -99,7 +99,7 @@ public class UserController extends BaseController {
         MessageDigest md5 = MessageDigest.getInstance("MD5");
         BASE64Encoder base64Encoder = new BASE64Encoder();
         //加密字符串
-        String newPassword = base64Encoder.encode(md5.digest((password.getBytes("utf-8"))));
+        String newPassword = base64Encoder.encode(md5.digest(password.getBytes("utf-8")));
         return newPassword;
     }
 
