@@ -36,14 +36,14 @@
         </javaClientGenerator>
 
         <!-- table指定每个表的生成策略 -->
-        <table tableName="user_info" domainObjectName="UserDO" enableCountByExample="false" enableDeleteByExample="false"
-               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="user_password" domainObjectName="UserPasswordDO" enableCountByExample="false" enableDeleteByExample="false"
-               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <!--<table tableName="item" domainObjectName="itemDO" enableCountByExample="false" enableDeleteByExample="false"
-               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
-        <table tableName="item_stock" domainObjectName="itemStockDO" enableCountByExample="false" enableDeleteByExample="false"
-               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+<!--        <table tableName="user_info" domainObjectName="UserDO" enableCountByExample="false" enableDeleteByExample="false"-->
+<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+<!--        <table tableName="user_password" domainObjectName="UserPasswordDO" enableCountByExample="false" enableDeleteByExample="false"-->
+<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+<!--        <table tableName="item" domainObjectName="itemDO" enableCountByExample="false" enableDeleteByExample="false"-->
+<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+<!--        <table tableName="item_stock" domainObjectName="itemStockDO" enableCountByExample="false" enableDeleteByExample="false"-->
+<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
         <!--<table tableName="sequence_info" domainObjectName="SequenceDO" enableCountByExample="false" enableDeleteByExample="false"
                enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
         <!--<table tableName="promo" domainObjectName="PromoDO" enableCountByExample="false" enableDeleteByExample="false"

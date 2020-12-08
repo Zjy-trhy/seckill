@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>用户注册</title>
+
+    <!-- Bootstrap -->
+    <link href="images/bootstrap.min.css" rel="stylesheet">
+    <link href="images/main.css" rel="stylesheet">
+    <link href="images/enter.css" rel="stylesheet">
+    <script src="images/jquery.min.js"></script>
+    <script src="images/bootstrap.min.js"></script>
+    <script src="images/jquery.particleground.min.js"></script>
+</head>
+<body>
+<div id="particles">
+    <canvas class="pg-canvas" width="1920" height="911" style="display: block;"></canvas>
+    <div class="intro" style="margin-top: -256.5px;">
+        <div class="container">
+            <div class="row" style="padding:30px 0;">
+                <div class="col-md-3 col-centered tac"><img src="images/logo.png" alt="logo"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content">
+                <div class="col-md-3 col-sm-8 col-centered">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="telphone" name="telphone" placeholder="手机号" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="otpCode" name="otpCode" placeholder="验证码" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="密码" autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="name" name="name" placeholder="用户名" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="gender" name="gender" placeholder="性别" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="age" name="age" placeholder="年龄" autocomplete="off">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="register" class="btn btn-primary btn-current">提交注册</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+<!--        <div class="modal fade" id="myModal" tabindex="-1" style="text-align: left" role="dialog">-->
+<!--            <div class="modal-dialog" role="document">-->
+<!--                <div class="modal-content">-->
+<!--                    <div class="modal-header">-->
+<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span-->
+<!--                                aria-hidden="true">×</span></button>-->
+<!--                        <h4 class="modal-title">用户协议</h4>-->
+<!--                    </div>-->
+<!--                    <div class="modal-body" id="agreementContent"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <link rel="stylesheet" href="images/jquery.validator.css">
+        <script src="images/zh-CN.js"></script>
+        <script src="images/jquery.validator.min.js"></script>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var intro = $('.intro');
+        $('#particles').particleground({
+            dotColor: 'rgba(52, 152, 219, 0.36)',
+            lineColor: 'rgba(52, 152, 219, 0.86)',
+            density: 130000,
+            proximity: 500,
+            lineWidth: 0.2
+        });
+        intro.css({
+            'margin-top': -(intro.height() / 2 + 100)
+        });
+    });
+</script>
+</body>
+
+<script>
+    <!--    等页面成功渲染之后，才能执行-->
+    jQuery(document).ready(function () {
+        $("#register").on("click", function () {
+            //绑定otp的click事件，用于向后端发送获取手机验证码的请求
+            let telPhone = $("#telphone").val();
+            let otpCode = $("#otpCode").val();
+            let password = $("#password").val();
+            let name = $("#name").val();
+            let gender = $("#gender").val();
+            let age = $("#age").val();
+            if (telPhone == null || telPhone == "") {
+                alert("手机号不能为空");
+                return false;
+            }
+            if (otpCode == null || otpCode == "") {
+                alert("验证码不能为空");
+                return false;
+            }
+            if (password == null || password == "") {
+                alert("密码不能为空");
+                return false;
+            }
+            if (name == null || name == "") {
+                alert("用户名不能为空");
+                return false;
+            }
+            if (gender == null || gender == "") {
+                alert("性别不能为空");
+                return false;
+            }
+            if (age == null || age == "") {
+                alert("年龄不能为空");
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded",
+                url: "http://localhost:8080/user/register",
+                data: {
+                    "telPhone": telPhone,
+                    "otpCode": otpCode,
+                    "password": password,
+                    "name": name,
+                    "gender": gender,
+                    "age": age
+                },
+                xhrFields: {withCredentials: true},
+                success: function (data) {
+                    if (data.status == "success") {
+                        alert("注册成功");
+                    } else {
+                        alert("注册失败，原因为：" + data.data.get("errMsg"));
+                    }
+                },
+                error: function (data) {
+                    alert("注册失败, 原因为" + data.responseText);
+                }
+            });
+            return false;
+        });
+    })
+</script>
+</html>

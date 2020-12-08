@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>创建商品</title>
+
+    <!-- Bootstrap -->
+    <link href="images/bootstrap.min.css" rel="stylesheet">
+    <link href="images/main.css" rel="stylesheet">
+    <link href="images/enter.css" rel="stylesheet">
+    <script src="images/jquery.min.js"></script>
+    <script src="images/bootstrap.min.js"></script>
+    <script src="images/jquery.particleground.min.js"></script>
+</head>
+<body>
+<div id="particles">
+    <canvas class="pg-canvas" width="1920" height="911" style="display: block;"></canvas>
+    <div class="intro" style="margin-top: -256.5px;">
+        <div class="container">
+            <div class="row" style="padding:30px 0;">
+                <div class="col-md-3 col-centered tac"><img src="images/createItem.png" alt="logo"></div>
+            </div>
+        </div>
+        <div class="container">
+            <div class="content">
+                <div class="col-md-3 col-sm-8 col-centered">
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="title" name="title" placeholder="商品名" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="price" name="price" placeholder="价格" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="stock" name="stock" placeholder="库存" autocomplete="new-password">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="description" name="description" placeholder="描述" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="text" class="form-control" id="imgUrl" name="imgUrl" placeholder="图片地址" autocomplete="off">
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" id="create" class="btn btn-primary btn-current">创建商品</button>
+                        </div>
+                </div>
+            </div>
+        </div>
+<!--        <div class="modal fade" id="myModal" tabindex="-1" style="text-align: left" role="dialog">-->
+<!--            <div class="modal-dialog" role="document">-->
+<!--                <div class="modal-content">-->
+<!--                    <div class="modal-header">-->
+<!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span-->
+<!--                                aria-hidden="true">×</span></button>-->
+<!--                        <h4 class="modal-title">用户协议</h4>-->
+<!--                    </div>-->
+<!--                    <div class="modal-body" id="agreementContent"></div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+        <link rel="stylesheet" href="images/jquery.validator.css">
+        <script src="images/zh-CN.js"></script>
+        <script src="images/jquery.validator.min.js"></script>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var intro = $('.intro');
+        $('#particles').particleground({
+            dotColor: 'rgba(52, 152, 219, 0.36)',
+            lineColor: 'rgba(52, 152, 219, 0.86)',
+            density: 130000,
+            proximity: 500,
+            lineWidth: 0.2
+        });
+        intro.css({
+            'margin-top': -(intro.height() / 2 + 100)
+        });
+    });
+</script>
+</body>
+
+<script>
+    <!--    等页面成功渲染之后，才能执行-->
+    jQuery(document).ready(function () {
+        $("#create").on("click", function () {
+            //绑定otp的click事件，用于向后端发送获取手机验证码的请求
+            let title = $("#title").val();
+            let price = $("#price").val();
+            let stock = $("#stock").val();
+            let description = $("#description").val();
+            let imgUrl = $("#imgUrl").val();
+            if (title == null || title == "") {
+                alert("商品名不能为空");
+                return false;
+            }
+            if (price == null || price == "") {
+                alert("价格不能为空");
+                return false;
+            }
+            if (stock == null || stock == "") {
+                alert("库存不能为空");
+                return false;
+            }
+            if (description == null || description == "") {
+                alert("描述不能为空");
+                return false;
+            }
+            if (imgUrl == null || imgUrl == "") {
+                alert("图片不能为空");
+                return false;
+            }
+            $.ajax({
+                type: "POST",
+                contentType: "application/x-www-form-urlencoded",
+                url: "http://localhost:8080/item/createItem",
+                data: {
+                    "title": title,
+                    "price": price,
+                    "stock": stock,
+                    "description": description,
+                    "imgUrl": imgUrl
+                },
+                xhrFields: {withCredentials: true},
+                success: function (data) {
+                    if (data.status == "success") {
+                        alert("创建商品成功");
+                    } else {
+                        alert("创建失败，原因为：" + data.data.get("errMsg"));
+                    }
+                },
+                error: function (data) {
+                    alert("注册失败, 原因为" + data.responseText);
+                }
+            });
+            return false;
+        });
+    })
+</script>
+</html>

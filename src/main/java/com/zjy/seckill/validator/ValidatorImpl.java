@@ -11,6 +11,7 @@ import java.util.Set;
 @Component
 public class ValidatorImpl implements InitializingBean {
 
+    //javax.validation的Validator，由他去做检验
     private Validator validator;
 
     //实现校验方法并返回校验结果
