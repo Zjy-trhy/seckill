@@ -6,6 +6,20 @@ import org.apache.catalina.User;
 
 public interface UserService {
 
+    /**
+     * 用户登录接口
+     * @param telPhone 用户账号
+     * @param encryptPassword 用户输入的明文密码经过加密之后传入的加密密码
+     * @return
+     * @throws BusinessException
+     */
+    UserModel validateLogin(String telPhone, String encryptPassword) throws BusinessException;
+
+    /**
+     * 用户注册接口
+     * @param userModel 用户提交的注册信息
+     * @throws BusinessException
+     */
     void register(UserModel userModel) throws BusinessException;
 
     /**

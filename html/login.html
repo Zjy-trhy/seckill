@@ -14,6 +14,7 @@
     <script src="images/jquery.min.js"></script>
     <script src="images/bootstrap.min.js"></script>
     <script src="images/jquery.particleground.min.js"></script>
+<!--    <script src="js/jquery-1.11.0.min.js"></script>-->
 </head>
 <body>
 <div id="particles">
@@ -30,11 +31,16 @@
                     <form method="post" id="register-form" autocomplete="off" action="/"
                           class="nice-validator n-default" novalidate>
                         <div class="form-group">
-                            <input type="text" class="form-control" id="telphone" name="telphone" placeholder="手机号" autocomplete="off">
+                            <input type="text" class="form-control" id="telphone" name="telphone" placeholder="账号" autocomplete="off">
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="密码" autocomplete="new-password">
                         </div>
                         <div class="form-actions">
-                            <button type="submit" id="getotp" class="btn btn-primary btn-current">获取短信验证码
-                            </button>
+                            <div>
+                                <button type="submit" id="login" class="btn btn-primary btn-current">登录</button>
+                                <button type="submit" id="register" class="btn btn-success btn-current">注册</button>
+                            </div>
                         </div>
                     </form>
                 </div>
@@ -77,9 +83,15 @@
 <script>
     <!--    等页面成功渲染之后，才能执行-->
     jQuery(document).ready(function () {
-        $("#getotp").on("click", function () {
+
+        $("#register").on("click", function () {
+            window.location.href = "register.html";
+        });
+
+        $("#login").on("click", function () {
             //绑定otp的click事件，用于向后端发送获取手机验证码的请求
             let telPhone = $("#telphone").val();
+            let password = $("#password").val();
             if (telPhone == null || telPhone == "") {
                 alert("手机号不能为空");
                 return false;
@@ -87,17 +99,18 @@
             $.ajax({
                 type: "POST",
                 contentType: "application/x-www-form-urlencoded",
-                url: "http://localhost:8080/user/getOtp",
+                url: "http://localhost:8080/user/login",
                 data: {
-                    "telPhone": $("#telphone").val()
+                    "telPhone": telPhone,
+                    "password": password
                 },
                 xhrFields: {withCredentials: true},
                 success: function (data) {
                     if (data.status == "success") {
-                        alert("otp已经发送到了您的手机上");
+                        alert("登录成功");
                         window.location.href = "register.html";
                     } else {
-                        alert("发送失败，原因为：" + data.data.errMsg);
+                        alert("登录失败，原因为：" + data.data.errMsg);
                     }
                 },
                 error: function (data) {
