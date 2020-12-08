@@ -8,6 +8,8 @@ import com.zjy.seckill.mapper.UserDOMapper;
 import com.zjy.seckill.mapper.UserPasswordDOMapper;
 import com.zjy.seckill.service.UserService;
 import com.zjy.seckill.service.model.UserModel;
+import com.zjy.seckill.validator.ValidationResult;
+import com.zjy.seckill.validator.ValidatorImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DuplicateKeyException;
@@ -24,6 +26,9 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private UserPasswordDOMapper userPasswordDOMapper;
+
+    @Resource
+    private ValidatorImpl validator;
 
     @Override
     public UserModel validateLogin(String telPhone, String encryptPassword) throws BusinessException {
@@ -48,13 +53,17 @@ public class UserServiceImpl implements UserService {
         if (userModel == null) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
         }
-        if (org.apache.commons.lang3.StringUtils.isEmpty(userModel.getName())
-                || userModel.getGender() == null
-                || userModel.getAge() == null
-                || StringUtils.isEmpty(userModel.getTelphone())) {
-            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
-        }
+//        if (org.apache.commons.lang3.StringUtils.isEmpty(userModel.getName())
+//                || userModel.getGender() == null
+//                || userModel.getAge() == null
+//                || StringUtils.isEmpty(userModel.getTelphone())) {
+//            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR);
+//        }
 
+        ValidationResult validationResult = validator.validate(userModel);
+        if (validationResult.isHasErrors()) {
+            throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR,validationResult.getErrMsg());
+        }
         //实现model ——> dataObject
         UserDO userDO = convertFromModel(userModel);
         try {

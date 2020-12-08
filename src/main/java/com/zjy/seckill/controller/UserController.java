@@ -8,14 +8,9 @@ import com.zjy.seckill.error.EmBusinessError;
 import com.zjy.seckill.response.CommonReturnType;
 import com.zjy.seckill.service.UserService;
 import com.zjy.seckill.service.model.UserModel;
-import io.netty.handler.codec.base64.Base64Encoder;
-import org.apache.tomcat.util.security.MD5Encoder;
 import org.springframework.beans.BeanUtils;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
-import sun.security.provider.MD5;
-
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.io.UnsupportedEncodingException;
