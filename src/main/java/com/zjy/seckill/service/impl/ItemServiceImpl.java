@@ -2,13 +2,14 @@ package com.zjy.seckill.service.impl;
 
 import com.zjy.seckill.dataobject.ItemDO;
 import com.zjy.seckill.dataobject.ItemStockDO;
-import com.zjy.seckill.dataobject.UserDO;
 import com.zjy.seckill.error.BusinessException;
 import com.zjy.seckill.error.EmBusinessError;
 import com.zjy.seckill.mapper.ItemDOMapper;
 import com.zjy.seckill.mapper.ItemStockDOMapper;
 import com.zjy.seckill.service.ItemService;
+import com.zjy.seckill.service.PromoService;
 import com.zjy.seckill.service.model.ItemModel;
+import com.zjy.seckill.service.model.PromoModel;
 import com.zjy.seckill.validator.ValidationResult;
 import com.zjy.seckill.validator.ValidatorImpl;
 import org.springframework.beans.BeanUtils;
@@ -31,6 +32,28 @@ public class ItemServiceImpl implements ItemService {
     @Resource
     private ValidatorImpl validator;
 
+    @Resource
+    private PromoService promoService;
+
+    @Override
+    @Transactional
+    public void increaseSales(Integer itemId, Integer amount) {
+        itemDOMapper.increaseSales(itemId, amount);
+    }
+
+    @Override
+    @Transactional
+    public boolean decreaseStock(Integer itemId, Integer amount) {
+        int affectedRow = itemStockDOMapper.decreaseStock(itemId, amount);
+        if (affectedRow > 0) {
+            //更新库存成功
+            return true;
+        } else {
+            //更新库存失败
+            return false;
+        }
+    }
+
     @Override
     @Transactional
     public ItemModel createItem(ItemModel itemModel) throws BusinessException {
@@ -46,6 +69,14 @@ public class ItemServiceImpl implements ItemService {
         itemModel.setId(itemDO.getId());
         ItemStockDO itemStockDO = convertStockFromModel(itemModel);
         itemStockDOMapper.insertSelective(itemStockDO);
+
+        //查询活动信息
+        PromoModel promoModel = promoService.getPromoByItemId(itemModel.getId());
+
+        //活动已经结束了，不应该展示
+        if (promoModel != null && promoModel.getStatus().intValue() != 3) {
+            itemModel.setPromoModel(promoModel);
+        }
         //返回创建完成的对象
         return getItemById(itemModel.getId());
     }

@@ -3,11 +3,14 @@ package com.zjy.seckill.mapper;
 import com.zjy.seckill.dataobject.ItemDO;
 import com.zjy.seckill.dataobject.UserDO;
 import com.zjy.seckill.service.model.UserModel;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
 public interface ItemDOMapper {
 
+
+    int increaseSales(@Param("id") Integer id, @Param("amount") Integer amount);
 
     List<ItemDO> listItem();
 

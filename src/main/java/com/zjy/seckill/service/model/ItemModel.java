@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 
 public class ItemModel {
 
+    //使用聚合模型，如果不为空，则表示其拥有还未结束的秒杀活动
+    private PromoModel promoModel;
+
     //商品ID
     private Integer id;
 
@@ -33,6 +36,14 @@ public class ItemModel {
     //商品对应的图片url
     @NotBlank(message = "图片信息不能为空")
     private String imgUrl;
+
+    public PromoModel getPromoModel() {
+        return promoModel;
+    }
+
+    public void setPromoModel(PromoModel promoModel) {
+        this.promoModel = promoModel;
+    }
 
     public Integer getId() {
         return id;

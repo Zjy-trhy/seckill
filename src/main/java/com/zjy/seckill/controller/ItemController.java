@@ -67,6 +67,17 @@ public class ItemController extends BaseController {
         }
         ItemVO itemVO = new ItemVO();
         BeanUtils.copyProperties(itemModel, itemVO);
+        if (itemModel.getPromoModel() != null) {
+            //有秒杀活动
+            //未开始还是正在进行中，VO的status和ProModel的status数值一致
+            itemVO.setPromoStatus(itemModel.getPromoModel().getStatus());
+            itemVO.setPromoId(itemModel.getPromoModel().getId());
+            itemVO.setStartDate(itemModel.getPromoModel().getStartDate());
+            itemVO.setPromoPrice(itemModel.getPromoModel().getPromoItemPrice());
+        } else {
+            //没有秒杀活动
+            itemVO.setPromoStatus(0);
+        }
         return itemVO;
     }
 }

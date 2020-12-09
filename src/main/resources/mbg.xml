@@ -5,7 +5,7 @@
 <generatorConfiguration>
     <context id="DB2Tables" targetRuntime="MyBatis3">
         <commentGenerator>
-<!--            <property name="suppressAllComments" value="true"/>-->
+            <!--            <property name="suppressAllComments" value="true"/>-->
         </commentGenerator>
         <!--       配置数据库连接-->
         <jdbcConnection driverClass="com.mysql.cj.jdbc.Driver"
@@ -26,29 +26,32 @@
 
         <!--        指定sql映射文件生成的位置-->
         <sqlMapGenerator targetPackage="mapping" targetProject=".\src\main\resources">
-            <property name="enableSubPackages" value="true" />
+            <property name="enableSubPackages" value="true"/>
         </sqlMapGenerator>
 
-<!--        指定dao接口生成的位置,mapper接口-->
+        <!--        指定dao接口生成的位置,mapper接口-->
         <javaClientGenerator type="XMLMAPPER"
                              targetPackage="com.zjy.seckill.mapper" targetProject=".\src\main\java">
-            <property name="enableSubPackages" value="true" />
+            <property name="enableSubPackages" value="true"/>
         </javaClientGenerator>
 
         <!-- table指定每个表的生成策略 -->
-<!--        <table tableName="user_info" domainObjectName="UserDO" enableCountByExample="false" enableDeleteByExample="false"-->
-<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-<!--        <table tableName="user_password" domainObjectName="UserPasswordDO" enableCountByExample="false" enableDeleteByExample="false"-->
-<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-<!--        <table tableName="item" domainObjectName="itemDO" enableCountByExample="false" enableDeleteByExample="false"-->
-<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-<!--        <table tableName="item_stock" domainObjectName="itemStockDO" enableCountByExample="false" enableDeleteByExample="false"-->
-<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-        <!--<table tableName="sequence_info" domainObjectName="SequenceDO" enableCountByExample="false" enableDeleteByExample="false"
-               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-        <!--<table tableName="promo" domainObjectName="PromoDO" enableCountByExample="false" enableDeleteByExample="false"
-               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
-<!--        <table tableName="stock_log" domainObjectName="StockLogDO" enableCountByExample="false" enableDeleteByExample="false"-->
-<!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--        <table tableName="user_info" domainObjectName="UserDO" enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--        <table tableName="user_password" domainObjectName="UserPasswordDO" enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--        <table tableName="item" domainObjectName="itemDO" enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--        <table tableName="item_stock" domainObjectName="itemStockDO" enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <!--        <table tableName="order_info" domainObjectName="OrderDO" enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+<!--        <table tableName="sequence_info" domainObjectName="SequenceDO" enableCountByExample="false"-->
+        <!--               enableDeleteByExample="false"-->
+        <!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
+        <table tableName="promo" domainObjectName="PromoDO" enableCountByExample="false" enableDeleteByExample="false"
+               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>
+        <!--        <table tableName="stock_log" domainObjectName="StockLogDO" enableCountByExample="false" enableDeleteByExample="false"-->
+        <!--               enableUpdateByExample="false" enableSelectByExample="false" selectByExampleQueryId="false"></table>-->
     </context>
 </generatorConfiguration>

@@ -22,6 +22,11 @@
         -->
         id, title, price, description, sales, img_url
     </sql>
+    <update id="increaseSales">
+        update item
+        set sales = sales + #{amount}
+        where id = #{id};
+    </update>
     <select id="listItem" resultMap="BaseResultMap">
         select
         <include refid="Base_Column_List"></include>

@@ -79,7 +79,7 @@
                     g_itemList = data.data;
                     reloadDom();
                 } else {
-                    alert("获取商品信息失败，原因为：" + data.data.get("errMsg"));
+                    alert("获取商品信息失败，原因为：" + data.data.errMsg);
                 }
             },
             error: function (data) {
@@ -91,10 +91,12 @@
     function reloadDom() {
         for (let i = 0; i < g_itemList.length; i++) {
             let itemVO = g_itemList[i];
-            let dom = "<tr><td>" + itemVO.title + "</td>" + "<td><img style='width: 200px;height: auto;' src='" + itemVO.imgUrl + "'/></td>" + itemVO.description + "</td><td>"
-                + itemVO.price + "</td><td>" + itemVO.stock + "</td><td>" + itemVO.sales + "</td>>"
-                + "</tr>";
+            let dom = "<tr data-id = '" + itemVO.id + "' id='itemDetail" + itemVO.id + "'><td>" + itemVO.title + "</td><td><img style='width:100px;height:auto;' src='" + itemVO.imgUrl + "'/></td><td>" +
+                itemVO.description + "</td><td>" + itemVO.price + "</td><td>" + itemVO.stock + "</td><td>" + itemVO.sales + "</td></tr>";
             $("#itemContainer").append($(dom));
+            $("#itemDetail" + itemVO.id).on("click", function (e) {
+                window.location.href = "getItem.html?id=" + $(this).data("id");
+            });
         }
     }
 </script>

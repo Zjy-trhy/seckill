@@ -128,7 +128,7 @@
                     if (data.status == "success") {
                         alert("创建商品成功");
                     } else {
-                        alert("创建失败，原因为：" + data.data.get("errMsg"));
+                        alert("创建失败，原因为：" + data.data.errMsg);
                     }
                 },
                 error: function (data) {

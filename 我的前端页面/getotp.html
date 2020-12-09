@@ -97,7 +97,7 @@
                         alert("otp已经发送到了您的手机上");
                         window.location.href = "register.html";
                     } else {
-                        alert("发送失败，原因为：" + data.data.get("errMsg"));
+                        alert("发送失败，原因为：" + data.data.errMsg);
                     }
                 },
                 error: function (data) {

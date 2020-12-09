@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>商品详情</title>
+
+    <!-- Bootstrap -->
+    <link href="images/bootstrap.min.css" rel="stylesheet">
+    <link href="images/main.css" rel="stylesheet">
+    <link href="images/enter.css" rel="stylesheet">
+    <script src="images/jquery.min.js"></script>
+    <script src="images/bootstrap.min.js"></script>
+    <script src="images/jquery.particleground.min.js"></script>
+</head>
+<body>
+<div id="particles">
+    <canvas class="pg-canvas" width="1920" height="911" style="display: block;"></canvas>
+    <div class="intro" style="margin-top: -256.5px;">
+        <div class="container">
+        </div>
+        <div class="container">
+            <div class="content">
+                <div class="col-md-3 col-sm-8 col-centered">
+                    <div class="form-group">
+                        <div><label class="control-label" id="title"/></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">商品信息</label>
+                        <div><label class="control-label" id="description"/></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">商品价格</label>
+                        <div><label class="control-label" id="price"/></div>
+                    </div>
+                    <div class="form-group">
+                        <img style="width: 200px;height: auto" id="imgUrl"/>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">商品库存</label>
+                        <div><label class="control-label" id="stock"/></div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label">商品销量</label>
+                        <div><label class="control-label" id="sales"/></div>
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" id="createOrder" class="btn btn-primary btn-current">下单
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--        <div class="modal fade" id="myModal" tabindex="-1" style="text-align: left" role="dialog">-->
+        <!--            <div class="modal-dialog" role="document">-->
+        <!--                <div class="modal-content">-->
+        <!--                    <div class="modal-header">-->
+        <!--                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span-->
+        <!--                                aria-hidden="true">×</span></button>-->
+        <!--                        <h4 class="modal-title">用户协议</h4>-->
+        <!--                    </div>-->
+        <!--                    <div class="modal-body" id="agreementContent"></div>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+        <link rel="stylesheet" href="images/jquery.validator.css">
+        <script src="images/zh-CN.js"></script>
+        <script src="images/jquery.validator.min.js"></script>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        var intro = $('.intro');
+        $('#particles').particleground({
+            dotColor: 'rgba(52, 152, 219, 0.36)',
+            lineColor: 'rgba(52, 152, 219, 0.86)',
+            density: 130000,
+            proximity: 500,
+            lineWidth: 0.2
+        });
+        intro.css({
+            'margin-top': -(intro.height() / 2 + 100)
+        });
+    });
+</script>
+</body>
+
+<script>
+
+    function getParam(paramName) {
+        paramValue = "", isFound = !1;
+        if (this.location.search.indexOf("?") == 0 && this.location.search.indexOf("=") > 1) {
+            arrSource = unescape(this.location.search).substring(1, this.location.search.length).split("&"), i = 0;
+            while (i < arrSource.length && !isFound) arrSource[i].indexOf("=") > 0 && arrSource[i].split("=")[0].toLowerCase() == paramName.toLowerCase() && (paramValue = arrSource[i].split("=")[1], isFound = !0), i++
+        }
+
+        return paramValue == "" && (paramValue = null), paramValue
+    }
+
+    let g_itemVO = {};
+
+    <!--    等页面成功渲染之后，才能执行-->
+    jQuery(document).ready(function () {
+        $("#createOrder").on("click", function () {
+            $.ajax({
+                type: "POST",
+                url: "http://localhost:8080/order/createOrder",
+                data: {
+                    "itemId": g_itemVO.id,
+                    "amount": 1,
+                },
+                xhrFields: {withCredentials: true},
+                success: function (data) {
+                    if (data.status == "success") {
+                        alert("下单成功");
+                        // window.location.href = "getItem.html?id=" + g_itemVO.id;
+                        window.location.reload();
+                    } else {
+                        alert("下单失败，原因为：" + data.data.errMsg);
+                        if (data.data.errCod == 20003) {
+                            window.location.href = "login.html";
+                        }
+                    }
+                },
+                error: function (data) {
+                    alert("下单失败, 原因为" + data.responseText);
+                }
+            });
+        })
+        //获取商品详情
+        $.ajax({
+            type: "GET",
+            contentType: "application/x-www-form-urlencoded",
+            url: "http://localhost:8080/item/get",
+            data: {
+                "id": getParam("id"),
+            },
+            xhrFields: {withCredentials: true},
+            success: function (data) {
+                if (data.status == "success") {
+                    g_itemVO = data.data;
+                    reloadDom();
+                } else {
+                    alert("获取信息失败，原因为：" + data.data.errMsg);
+                }
+            },
+            error: function (data) {
+                alert("获取信息失败, 原因为" + data.responseText);
+            }
+        });
+    });
+
+    function reloadDom() {
+        $("#title").text(g_itemVO.title);
+        $("#description").text(g_itemVO.description);
+        $("#price").text(g_itemVO.price);
+        $("#imgUrl").attr("src", g_itemVO.imgUrl);
+        $("#stock").text(g_itemVO.stock);
+        $("#sales").text(g_itemVO.sales);
+    }
+</script>
+</html>

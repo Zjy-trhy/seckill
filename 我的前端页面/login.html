@@ -109,9 +109,9 @@
                 success: function (data) {
                     if (data.status == "success") {
                         alert("登录成功");
-                        window.location.href = "register.html";
+                        window.location.href = "listItem.html";
                     } else {
-                        alert("登录失败，原因为：" + data.data.get("errMsg"));
+                        alert("登录失败，原因为：" + data.data.errMsg);
                     }
                 },
                 error: function (data) {

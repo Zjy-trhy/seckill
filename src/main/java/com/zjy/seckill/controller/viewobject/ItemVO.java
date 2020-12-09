@@ -1,11 +1,25 @@
 package com.zjy.seckill.controller.viewobject;
 
+import org.joda.time.DateTime;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.math.BigDecimal;
 
 public class ItemVO {
+
+    //秒杀活动开始时间
+    private DateTime startDate;
+
+    //秒杀活动id
+    private Integer promoId;
+
+    //秒杀活动价格
+    private BigDecimal promoPrice;
+
+    //记录商品是否在秒杀活动中，以及对应的状态，0——没有，1——未开始，2——进行中
+    private Integer promoStatus;
 
     //商品ID
     private Integer id;
@@ -27,6 +41,38 @@ public class ItemVO {
 
     //商品对应的图片url
     private String imgUrl;
+
+    public DateTime getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(DateTime startDate) {
+        this.startDate = startDate;
+    }
+
+    public Integer getPromoId() {
+        return promoId;
+    }
+
+    public void setPromoId(Integer promoId) {
+        this.promoId = promoId;
+    }
+
+    public BigDecimal getPromoPrice() {
+        return promoPrice;
+    }
+
+    public void setPromoPrice(BigDecimal promoPrice) {
+        this.promoPrice = promoPrice;
+    }
+
+    public Integer getPromoStatus() {
+        return promoStatus;
+    }
+
+    public void setPromoStatus(Integer promoStatus) {
+        this.promoStatus = promoStatus;
+    }
 
     public Integer getId() {
         return id;
