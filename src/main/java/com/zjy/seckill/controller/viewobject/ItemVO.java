@@ -10,7 +10,7 @@ import java.math.BigDecimal;
 public class ItemVO {
 
     //秒杀活动开始时间
-    private DateTime startDate;
+    private String startDate;
 
     //秒杀活动id
     private Integer promoId;
@@ -42,11 +42,11 @@ public class ItemVO {
     //商品对应的图片url
     private String imgUrl;
 
-    public DateTime getStartDate() {
+    public String getStartDate() {
         return startDate;
     }
 
-    public void setStartDate(DateTime startDate) {
+    public void setStartDate(String startDate) {
         this.startDate = startDate;
     }
 

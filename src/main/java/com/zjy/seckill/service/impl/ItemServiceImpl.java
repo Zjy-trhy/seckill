@@ -70,13 +70,6 @@ public class ItemServiceImpl implements ItemService {
         ItemStockDO itemStockDO = convertStockFromModel(itemModel);
         itemStockDOMapper.insertSelective(itemStockDO);
 
-        //查询活动信息
-        PromoModel promoModel = promoService.getPromoByItemId(itemModel.getId());
-
-        //活动已经结束了，不应该展示
-        if (promoModel != null && promoModel.getStatus().intValue() != 3) {
-            itemModel.setPromoModel(promoModel);
-        }
         //返回创建完成的对象
         return getItemById(itemModel.getId());
     }
@@ -102,6 +95,13 @@ public class ItemServiceImpl implements ItemService {
         ItemStockDO itemStockDO = itemStockDOMapper.selectByItemId(itemDO.getId());
         //将dataObject ——> Model
         ItemModel itemModel = convertFromDataObject(itemDO, itemStockDO);
+        //查询活动信息
+        PromoModel promoModel = promoService.getPromoByItemId(itemModel.getId());
+
+        //活动已经结束了，不应该展示
+        if (promoModel != null && promoModel.getStatus().intValue() != 3) {
+            itemModel.setPromoModel(promoModel);
+        }
         return itemModel;
     }
 

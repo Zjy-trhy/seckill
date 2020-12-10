@@ -6,6 +6,8 @@ import com.zjy.seckill.mapper.ItemDOMapper;
 import com.zjy.seckill.response.CommonReturnType;
 import com.zjy.seckill.service.ItemService;
 import com.zjy.seckill.service.model.ItemModel;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -72,7 +74,7 @@ public class ItemController extends BaseController {
             //未开始还是正在进行中，VO的status和ProModel的status数值一致
             itemVO.setPromoStatus(itemModel.getPromoModel().getStatus());
             itemVO.setPromoId(itemModel.getPromoModel().getId());
-            itemVO.setStartDate(itemModel.getPromoModel().getStartDate());
+            itemVO.setStartDate(itemModel.getPromoModel().getStartDate().toString(DateTimeFormat.forPattern("yyyy-MM-dd HH:mm:ss")));
             itemVO.setPromoPrice(itemModel.getPromoModel().getPromoItemPrice());
         } else {
             //没有秒杀活动

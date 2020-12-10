@@ -41,8 +41,8 @@ public class PromoServiceImpl implements PromoService {
         PromoModel promoModel = new PromoModel();
         BeanUtils.copyProperties(promoDO, promoModel);
         //这里有属性需要单独设置，涉及到了类型的不同
-        promoModel.setStartDate(new DateTime(promoDO.getStartTime()));
-        promoModel.setEndDate(new DateTime(promoDO.getEndTime()));
+        promoModel.setStartDate(new DateTime(promoDO.getStartDate()));
+        promoModel.setEndDate(new DateTime(promoDO.getEndDate()));
         return promoModel;
     }
 }
