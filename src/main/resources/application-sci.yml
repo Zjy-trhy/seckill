@@ -10,3 +10,5 @@ mybatis:
   mapper-locations: classpath:mapping/*.xml
   configuration:
     map-underscore-to-camel-case: true
+server:
+  port: 8090
