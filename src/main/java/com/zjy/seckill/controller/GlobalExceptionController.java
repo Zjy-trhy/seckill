@@ -25,17 +25,17 @@ public class GlobalExceptionController {
 
         if (exception instanceof BusinessException) {
             BusinessException businessException = (BusinessException) exception;
-            responseData.put("errorCode", businessException.getErrCode());
-            responseData.put("errorMsg", businessException.getErrMsg());
+            responseData.put("errCode", businessException.getErrCode());
+            responseData.put("errMsg", businessException.getErrMsg());
         } else if (exception instanceof ServletRequestBindingException) {
-            responseData.put("errorCode", EmBusinessError.UNKNOWN_ERROR.getErrCode());
-            responseData.put("errorMsg", "url绑定路由问题");
+            responseData.put("errCode", EmBusinessError.UNKNOWN_ERROR.getErrCode());
+            responseData.put("errMsg", "url绑定路由问题");
         } else if (exception instanceof NoHandlerFoundException) {
-            responseData.put("errorCode", EmBusinessError.UNKNOWN_ERROR.getErrCode());
-            responseData.put("errorMsg", "没有找到对应的访问路径");
+            responseData.put("errCode", EmBusinessError.UNKNOWN_ERROR.getErrCode());
+            responseData.put("errMsg", "没有找到对应的访问路径");
         } else {
-            responseData.put("errorCode", EmBusinessError.UNKNOWN_ERROR.getErrCode());
-            responseData.put("errorMsg", exception.getMessage());
+            responseData.put("errCode", EmBusinessError.UNKNOWN_ERROR.getErrCode());
+            responseData.put("errMsg", exception.getMessage());
         }
 
         return CommonReturnType.create(responseData, "fail");

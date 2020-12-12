@@ -5,3 +5,10 @@ spring:
     add-mappings: false
   profiles:
     active: sci
+server:
+  tomcat:
+    accept-count: 1000
+    threads:
+      max: 800
+      min-spare: 100
+
