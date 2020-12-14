@@ -9,6 +9,7 @@ import com.zjy.seckill.response.CommonReturnType;
 import com.zjy.seckill.service.UserService;
 import com.zjy.seckill.service.model.UserModel;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 import sun.misc.BASE64Encoder;
 import javax.annotation.Resource;
@@ -17,6 +18,8 @@ import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 @RestController("user")
 @RequestMapping("/user")
@@ -29,6 +32,9 @@ public class UserController extends BaseController {
     //重点！理论上来说这样注入的，是单例模式，但是这个通过了ThreadLoacl的多线程处理，还拥有ThreadLocal清除机制，本质是proxy
     @Resource
     private HttpServletRequest httpServletRequest;
+
+    @Resource
+    private RedisTemplate redisTemplate;
 
 
     @PostMapping(value = "/login", consumes = {CONTENT_TYPE_FORMED})
@@ -43,9 +49,18 @@ public class UserController extends BaseController {
         UserModel userModel = userService.validateLogin(telPhone, encodeByMd5(password));
 
         //将凭证加入到用户登录成功的Session内
-        httpServletRequest.getSession().setAttribute("IS_LOGIN", true);
-        httpServletRequest.getSession().setAttribute("LOGIN_USER", userModel);
-        return CommonReturnType.create(null);
+//        httpServletRequest.getSession().setAttribute("IS_LOGIN", true);
+//        httpServletRequest.getSession().setAttribute("LOGIN_USER", userModel);
+
+        //改进，生成登录凭证，和登录信息一起存入redis
+        //1.生成登录凭证,token,UUID
+        String uuidToken = UUID.randomUUID().toString();
+        uuidToken = uuidToken.replace("-", "");
+        //建立token和用户登录态之间的联系
+        redisTemplate.opsForValue().set(uuidToken, userModel);
+        redisTemplate.expire(uuidToken, 1, TimeUnit.HOURS);
+        //下发token
+        return CommonReturnType.create(uuidToken);
     }
 
     //用户注册接口

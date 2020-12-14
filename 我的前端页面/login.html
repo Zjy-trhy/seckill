@@ -109,6 +109,9 @@
                 success: function (data) {
                     if (data.status == "success") {
                         alert("登录成功");
+                        let token = data.data;
+                        //这是html5新出的，比cookie更安全，存储容量更大，没有4kb相关的限制
+                        window.localStorage["token"] = token;
                         window.location.href = "listItem.html";
                     } else {
                         alert("登录失败，原因为：" + data.data.errMsg);

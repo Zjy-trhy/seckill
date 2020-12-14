@@ -113,9 +113,15 @@
     <!--    等页面成功渲染之后，才能执行-->
     jQuery(document).ready(function () {
         $("#createOrder").on("click", function () {
+            let token = window.localStorage["token"];
+            if (token == null) {
+                alert("没有登录，不能下单");
+                window.location.href = "login.html";
+                return false;
+            }
             $.ajax({
                 type: "POST",
-                url: "http://" + g_host + "/order/createOrder",
+                url: "http://" + g_host + "/order/createOrder?token=" + token,
                 data: {
                     "itemId": g_itemVO.id,
                     "amount": 1,
@@ -128,14 +134,14 @@
                         // window.location.href = "getItem.html?id=" + g_itemVO.id;
                         window.location.reload();
                     } else {
-                        alert("下单失败，原因为：" + data.data.errMsg);
+                        alert("弱下单失败，原因为：" + data.data.errMsg);
                         if (data.data.errCode == 20003) {
                             window.location.href = "login.html";
                         }
                     }
                 },
                 error: function (data) {
-                    alert("下单失败, 原因为" + data.responseText);
+                    alert("硬核下单失败, 原因为" + data.responseText);
                 }
             });
         })
