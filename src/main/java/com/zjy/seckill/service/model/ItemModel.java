@@ -3,9 +3,10 @@ package com.zjy.seckill.service.model;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.math.BigDecimal;
 
-public class ItemModel {
+public class ItemModel implements Serializable {
 
     //使用聚合模型，如果不为空，则表示其拥有还未结束的秒杀活动
     private PromoModel promoModel;
