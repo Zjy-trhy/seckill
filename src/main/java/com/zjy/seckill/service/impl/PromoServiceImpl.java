@@ -17,6 +17,12 @@ public class PromoServiceImpl implements PromoService {
     private PromoDOMapper promoDOMapper;
 
     @Override
+    public void publishPromo(Integer promoId) {
+        PromoDO promoDO = promoDOMapper.selectByPrimaryKey(promoId);
+        if ()
+    }
+
+    @Override
     public PromoModel getPromoByItemId(Integer itemId) {
         //获取商品对应的秒杀信息
         PromoDO promoDO = promoDOMapper.selectByItemId(itemId);

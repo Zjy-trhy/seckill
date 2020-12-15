@@ -6,6 +6,9 @@ import org.apache.catalina.User;
 
 public interface UserService {
 
+    //通过缓存获取用户对象
+    UserModel getUserByIdInCache(Integer id);
+
     /**
      * 用户登录接口
      * @param telPhone 用户账号

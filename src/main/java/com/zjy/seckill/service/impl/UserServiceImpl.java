@@ -13,10 +13,12 @@ import com.zjy.seckill.validator.ValidatorImpl;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.dao.DuplicateKeyException;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.concurrent.TimeUnit;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -29,6 +31,21 @@ public class UserServiceImpl implements UserService {
 
     @Resource
     private ValidatorImpl validator;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    @Override
+    public UserModel getUserByIdInCache(Integer id) {
+        String key = "user_validate_" + id;
+        UserModel userModel = (UserModel) redisTemplate.opsForValue().get(key);
+        if (userModel == null) {
+            userModel = getUserById(id);
+            redisTemplate.opsForValue().set(key, userModel);
+            redisTemplate.expire(key, 10, TimeUnit.MINUTES);
+        }
+        return userModel;
+    }
 
     @Override
     public UserModel validateLogin(String telPhone, String encryptPassword) throws BusinessException {

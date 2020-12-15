@@ -13,11 +13,13 @@ import com.zjy.seckill.service.model.PromoModel;
 import com.zjy.seckill.validator.ValidationResult;
 import com.zjy.seckill.validator.ValidatorImpl;
 import org.springframework.beans.BeanUtils;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +36,21 @@ public class ItemServiceImpl implements ItemService {
 
     @Resource
     private PromoService promoService;
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    @Override
+    public ItemModel getItemByIdInCache(Integer id) {
+        String key = "item_validate_" + id;
+        ItemModel itemModel = (ItemModel) redisTemplate.opsForValue().get(key);
+        if (itemModel == null) {
+            itemModel = getItemById(id);
+            redisTemplate.opsForValue().set(key, itemModel);
+            redisTemplate.expire(key, 10, TimeUnit.MINUTES);
+        }
+        return itemModel;
+    }
 
     @Override
     @Transactional
