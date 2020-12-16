@@ -6,12 +6,17 @@ import com.zjy.seckill.error.BusinessException;
 import com.zjy.seckill.error.EmBusinessError;
 import com.zjy.seckill.mapper.ItemDOMapper;
 import com.zjy.seckill.mapper.ItemStockDOMapper;
+import com.zjy.seckill.mq.MqProducer;
 import com.zjy.seckill.service.ItemService;
 import com.zjy.seckill.service.PromoService;
 import com.zjy.seckill.service.model.ItemModel;
 import com.zjy.seckill.service.model.PromoModel;
 import com.zjy.seckill.validator.ValidationResult;
 import com.zjy.seckill.validator.ValidatorImpl;
+import org.apache.rocketmq.client.exception.MQBrokerException;
+import org.apache.rocketmq.client.exception.MQClientException;
+import org.apache.rocketmq.client.producer.SendResult;
+import org.apache.rocketmq.remoting.exception.RemotingException;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -40,6 +45,21 @@ public class ItemServiceImpl implements ItemService {
     @Resource
     private RedisTemplate redisTemplate;
 
+    @Resource
+    private MqProducer mqProducer;
+
+    @Override
+    public boolean increaseStock(Integer itemId, Integer amount) {
+        redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount.intValue());
+        return true;
+    }
+
+    @Override
+    public boolean asyncDecreaseStock(Integer itemId, Integer amount) {
+        boolean sendResult = mqProducer.asyncReduceStock(itemId, amount);
+        return sendResult;
+    }
+
     @Override
     public ItemModel getItemByIdInCache(Integer id) {
         String key = "item_validate_" + id;
@@ -61,12 +81,19 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public boolean decreaseStock(Integer itemId, Integer amount) {
-        int affectedRow = itemStockDOMapper.decreaseStock(itemId, amount);
-        if (affectedRow > 0) {
+//        int affectedRow = itemStockDOMapper.decreaseStock(itemId, amount);
+        Long result = redisTemplate.opsForValue().decrement("promo_item_stock_" + itemId, amount.intValue());
+        if (result >= 0) {
             //更新库存成功
+//            boolean sendResult = mqProducer.asyncReduceStock(itemId, amount);
+//            if (!sendResult) {
+//                redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount.intValue());
+//                return false;
+//            }
             return true;
         } else {
             //更新库存失败
+            increaseStock(itemId, amount);
             return false;
         }
     }

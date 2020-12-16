@@ -7,6 +7,12 @@ import java.util.List;
 
 public interface ItemService {
 
+    //异步扣减数据库失败时，需要回滚库存
+    boolean increaseStock(Integer itemId, Integer amount);
+
+    //异步扣减库存
+    boolean asyncDecreaseStock(Integer itemId, Integer amount);
+
     //item及promo model缓存模型
     ItemModel getItemByIdInCache(Integer id);
 

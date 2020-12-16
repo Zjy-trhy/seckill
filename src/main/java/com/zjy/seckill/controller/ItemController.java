@@ -6,6 +6,7 @@ import com.zjy.seckill.mapper.ItemDOMapper;
 import com.zjy.seckill.response.CommonReturnType;
 import com.zjy.seckill.service.CacheService;
 import com.zjy.seckill.service.ItemService;
+import com.zjy.seckill.service.PromoService;
 import com.zjy.seckill.service.model.ItemModel;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -32,6 +33,15 @@ public class ItemController extends BaseController {
 
     @Resource
     private CacheService cacheService;
+
+    @Resource
+    private PromoService promoService;
+
+    @RequestMapping("/publishPromo")
+    public CommonReturnType publishPromo(@RequestParam("id") Integer id) {
+        promoService.publishPromo(id);
+        return CommonReturnType.create(null);
+    }
 
     @GetMapping(value = "/listItem")
     public CommonReturnType listItem() {

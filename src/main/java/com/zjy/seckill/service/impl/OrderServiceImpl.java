@@ -6,6 +6,7 @@ import com.zjy.seckill.error.BusinessException;
 import com.zjy.seckill.error.EmBusinessError;
 import com.zjy.seckill.mapper.OrderDOMapper;
 import com.zjy.seckill.mapper.SequenceDOMapper;
+import com.zjy.seckill.service.CacheService;
 import com.zjy.seckill.service.ItemService;
 import com.zjy.seckill.service.OrderService;
 import com.zjy.seckill.service.UserService;
@@ -17,6 +18,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronizationAdapter;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
@@ -38,6 +41,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Resource
     private SequenceDOMapper sequenceDOMapper;
+
+    @Resource
+    private CacheService cacheService;
 
     @Override
     @Transactional
@@ -71,6 +77,10 @@ public class OrderServiceImpl implements OrderService {
 
         //落单减库存
         boolean result = itemService.decreaseStock(itemId, amount);
+
+        //删除本地缓存里面item
+//        cacheService.setCommonCache("item_" + itemId, null);
+
         if (!result) {
             throw new BusinessException(EmBusinessError.STOCK_NOT_ENOUGH);
         }
@@ -94,6 +104,18 @@ public class OrderServiceImpl implements OrderService {
 
         //更新销量
         itemService.increaseSales(itemId, amount);
+
+        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+            @Override
+            public void afterCommit() {
+                //异步扣减库存
+                boolean mqResult = itemService.asyncDecreaseStock(itemId, amount);
+//                if (!mqResult) {
+//                    itemService.increaseStock(itemId, amount);
+//                    throw new BusinessException(EmBusinessError.MQ_SEND_FAIL);
+//                }
+            }
+        });
         //返回前端
         return orderModel;
     }
