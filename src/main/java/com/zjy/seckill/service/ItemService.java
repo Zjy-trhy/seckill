@@ -7,6 +7,9 @@ import java.util.List;
 
 public interface ItemService {
 
+    //初始化库存流水
+    String initStockLog(Integer itemId, Integer amount);
+
     //异步扣减数据库失败时，需要回滚库存
     boolean increaseStock(Integer itemId, Integer amount);
 

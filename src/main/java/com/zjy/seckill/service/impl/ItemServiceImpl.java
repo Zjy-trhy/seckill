@@ -2,10 +2,12 @@ package com.zjy.seckill.service.impl;
 
 import com.zjy.seckill.dataobject.ItemDO;
 import com.zjy.seckill.dataobject.ItemStockDO;
+import com.zjy.seckill.dataobject.StockLogDO;
 import com.zjy.seckill.error.BusinessException;
 import com.zjy.seckill.error.EmBusinessError;
 import com.zjy.seckill.mapper.ItemDOMapper;
 import com.zjy.seckill.mapper.ItemStockDOMapper;
+import com.zjy.seckill.mapper.StockLogDOMapper;
 import com.zjy.seckill.mq.MqProducer;
 import com.zjy.seckill.service.ItemService;
 import com.zjy.seckill.service.PromoService;
@@ -24,6 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -47,6 +50,27 @@ public class ItemServiceImpl implements ItemService {
 
     @Resource
     private MqProducer mqProducer;
+
+    @Resource
+    private StockLogDOMapper stockLogDOMapper;
+
+    /**
+     * 初始化对应的库存流水
+     *
+     * @param itemId
+     * @param amount
+     */
+    @Override
+    @Transactional
+    public String initStockLog(Integer itemId, Integer amount) {
+        StockLogDO stockLogDO = new StockLogDO();
+        stockLogDO.setItemId(itemId);
+        stockLogDO.setAmount(amount);
+        stockLogDO.setStockLogId(UUID.randomUUID().toString().replace("-", ""));
+        stockLogDO.setStatus(1);
+        stockLogDOMapper.insertSelective(stockLogDO);
+        return stockLogDO.getStockLogId();
+    }
 
     @Override
     public boolean increaseStock(Integer itemId, Integer amount) {
@@ -83,13 +107,11 @@ public class ItemServiceImpl implements ItemService {
     public boolean decreaseStock(Integer itemId, Integer amount) {
 //        int affectedRow = itemStockDOMapper.decreaseStock(itemId, amount);
         Long result = redisTemplate.opsForValue().decrement("promo_item_stock_" + itemId, amount.intValue());
-        if (result >= 0) {
-            //更新库存成功
-//            boolean sendResult = mqProducer.asyncReduceStock(itemId, amount);
-//            if (!sendResult) {
-//                redisTemplate.opsForValue().increment("promo_item_stock_" + itemId, amount.intValue());
-//                return false;
-//            }
+        if (result > 0) {
+            return true;
+        } else if (result == 0) {
+            //标记售罄
+            redisTemplate.opsForValue().set("promo_item_stock_invalid_" + itemId, "true");
             return true;
         } else {
             //更新库存失败

@@ -2,10 +2,12 @@ package com.zjy.seckill.service.impl;
 
 import com.zjy.seckill.dataobject.OrderDO;
 import com.zjy.seckill.dataobject.SequenceDO;
+import com.zjy.seckill.dataobject.StockLogDO;
 import com.zjy.seckill.error.BusinessException;
 import com.zjy.seckill.error.EmBusinessError;
 import com.zjy.seckill.mapper.OrderDOMapper;
 import com.zjy.seckill.mapper.SequenceDOMapper;
+import com.zjy.seckill.mapper.StockLogDOMapper;
 import com.zjy.seckill.service.CacheService;
 import com.zjy.seckill.service.ItemService;
 import com.zjy.seckill.service.OrderService;
@@ -45,9 +47,12 @@ public class OrderServiceImpl implements OrderService {
     @Resource
     private CacheService cacheService;
 
+    @Resource
+    private StockLogDOMapper stockLogDOMapper;
+
     @Override
     @Transactional
-    public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId,Integer amount) throws BusinessException {
+    public OrderModel createOrder(Integer userId, Integer itemId, Integer promoId,Integer amount, String stockLogId) throws BusinessException {
 
         //校验下单状态?商品是否存在，用户是否合法，购买数量是否正确
 //        ItemModel itemModel = itemService.getItemById(itemId);
@@ -56,16 +61,16 @@ public class OrderServiceImpl implements OrderService {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "商品信息不存在");
         }
 //        UserModel userModel = userService.getUserById(userId);
-        UserModel userModel = userService.getUserByIdInCache(userId);
+/*        UserModel userModel = userService.getUserByIdInCache(userId);
         if (userModel == null) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "用户信息不存在");
-        }
+        }*/
 
         if (amount <= 0 || amount > 99) {
             throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "数量不正确");
         }
 
-        //校验秒杀活动
+/*        //校验秒杀活动
         if (promoId != null) {
             //1.校验对应活动是否适用当前商品
             if (promoId != itemModel.getPromoModel().getId()) {
@@ -73,7 +78,7 @@ public class OrderServiceImpl implements OrderService {
             } else if (itemModel.getPromoModel().getStatus() != 2) {//校验活动是否正在进行
                 throw new BusinessException(EmBusinessError.PARAMETER_VALIDATION_ERROR, "活动还未开始");
             }
-        }
+        }*/
 
         //落单减库存
         boolean result = itemService.decreaseStock(itemId, amount);
@@ -105,17 +110,26 @@ public class OrderServiceImpl implements OrderService {
         //更新销量
         itemService.increaseSales(itemId, amount);
 
-        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
-            @Override
-            public void afterCommit() {
-                //异步扣减库存
-                boolean mqResult = itemService.asyncDecreaseStock(itemId, amount);
+        //设置库存流水状态成功
+        StockLogDO stockLogDO = stockLogDOMapper.selectByPrimaryKey(stockLogId);
+        if (stockLogDO == null) {
+            throw new BusinessException(EmBusinessError.UNKNOWN_ERROR);
+        }
+        //设置状态，扣减成功
+        stockLogDO.setStatus(2);
+        stockLogDOMapper.updateByPrimaryKeySelective(stockLogDO);
+
+//        TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
+//            @Override
+//            public void afterCommit() {
+//                //异步扣减库存
+//                boolean mqResult = itemService.asyncDecreaseStock(itemId, amount);
 //                if (!mqResult) {
 //                    itemService.increaseStock(itemId, amount);
 //                    throw new BusinessException(EmBusinessError.MQ_SEND_FAIL);
 //                }
-            }
-        });
+//            }
+//        });
         //返回前端
         return orderModel;
     }
