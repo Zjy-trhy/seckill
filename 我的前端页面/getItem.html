@@ -59,6 +59,12 @@
                         <button type="submit" id="createOrder" class="btn btn-primary btn-current">下单
                         </button>
                     </div>
+                    <div id="verifyDiv" style="display: none" class="form-actions">
+                        <img src=""/>
+                        <input type="text" id="verifyContent" value="">
+                        <button type="submit" id="verifyButton" class="btn btn-primary btn-current">验证
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -112,19 +118,15 @@
 
     <!--    等页面成功渲染之后，才能执行-->
     jQuery(document).ready(function () {
-        $("#createOrder").on("click", function () {
+        $("#verifyButton").on("click", function () {
             let token = window.localStorage["token"];
-            if (token == null) {
-                alert("没有登录，不能下单");
-                window.location.href = "login.html";
-                return false;
-            }
             $.ajax({
                 type: "POST",
                 url: "http://" + g_host + "/order/generateToken?token=" + token,
                 data: {
                     "itemId": g_itemVO.id,
-                    "promoId": g_itemVO.promoId
+                    "promoId": g_itemVO.promoId,
+                    "verifyCode": $("#verifyContent").val()
                 },
                 xhrFields: {withCredentials: true},
                 success: function (data) {
@@ -167,6 +169,17 @@
                     alert("硬核生成令牌失败, 原因为" + data.responseText);
                 }
             });
+        });
+        $("#createOrder").on("click", function () {
+            let token = window.localStorage["token"];
+            if (token == null) {
+                alert("没有登录，不能下单");
+                window.location.href = "login.html";
+                return false;
+            }
+            $("#verifyDiv img").attr("src", "http://" + g_host + "/order/generateVerifyCode?token=" + token);
+            $("#verifyDiv").show();
+            $("#createOrder").hide();
         })
         //获取商品详情
         $.ajax({
